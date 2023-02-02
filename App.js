@@ -1,19 +1,20 @@
-import 'react-native-gesture-handler';
+import "react-native-gesture-handler";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Font from "expo-font";
-import NavigationContainerComponent from './src/components/Navigator/NavigationContainerComponent';
-
+import NavigationContainerComponent from "./src/components/Navigator/NavigationContainerComponent";
+import { Provider } from "react-redux";
+import { store } from "./src/store/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 SplashScreen.preventAutoHideAsync();
 
-
+AsyncStorage.clear()
 
 export default function App() {
   const [appIsLoaded, setAppIsLoaded] = useState(false);
-
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -52,11 +53,12 @@ export default function App() {
     return null;
   }
 
-
   return (
-    <SafeAreaProvider onLayout={onLayout}>
-      <NavigationContainerComponent/>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider onLayout={onLayout}>
+        <NavigationContainerComponent />
+      </SafeAreaProvider>
+    </Provider>
   );
 }
 
