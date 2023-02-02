@@ -8,13 +8,14 @@ import { signIn, signUp } from "../../utils/Actions/authActions";
 import { ActivityIndicator, Alert, StyleSheet } from "react-native";
 import { useDispatch } from "react-redux";
 import colors from "../../../constants/colors";
+import { LOGIN_CREDENTIAL } from "../../../credentials/loginTestCredentials";
 
 const isTestMode = true
 
 const initialState = {
   inputValues: {
-    email: isTestMode ? "" : "",
-    password: isTestMode ? "" : "",
+    email: isTestMode ? LOGIN_CREDENTIAL.email : "",
+    password: isTestMode ? LOGIN_CREDENTIAL.password : "",
   },
   inputValidities: {
     email: isTestMode ? true : false,
