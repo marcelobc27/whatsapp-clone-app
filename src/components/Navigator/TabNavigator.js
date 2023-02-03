@@ -13,6 +13,7 @@ const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         headerTitle: "",
+        headerShadowVisible: false
       }}
     >
       <Tab.Screen

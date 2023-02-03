@@ -74,7 +74,7 @@ const SignInForm = () => {
         iconSize={24}
         autoCapitalize="none"
         keyboardType="email-address"
-        value={formState.inputValues.email}
+        initialValue={formState.inputValues.email}
         onInputChanged={inputChangedHandler}
         errorText={formState.inputValidities["email"]}
       />
@@ -86,7 +86,7 @@ const SignInForm = () => {
         iconSize={24}
         autoCapitalize="none"
         secureTextEntry
-        value={formState.inputValues.password}
+        initialValue={formState.inputValues.password}
         onInputChanged={inputChangedHandler}
         errorText={formState.inputValidities["password"]}
       />
@@ -98,9 +98,9 @@ const SignInForm = () => {
         />
       ) : (
         <SubmitButton
-          title="Sign Ip"
+          title="Sign In"
           onPress={() => authHandler()}
-          style={{ marginTop: 20 }}
+          style={styles.submitButton}
           disabled={!formState.formIsValid}
         />
       )}
@@ -112,6 +112,9 @@ const styles = StyleSheet.create({
   activityIndicator: {
     alignSelf: 'center',
     margin: 10
+  },
+  submitButton: {
+    marginTop: 20
   }
 })
 

@@ -8,6 +8,7 @@ import NavigationContainerComponent from "./src/components/Navigator/NavigationC
 import { Provider } from "react-redux";
 import { store } from "./src/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SettingsScreen from "./src/screens/SettingsScreen";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -57,6 +58,7 @@ export default function App() {
     <Provider store={store}>
       <SafeAreaProvider onLayout={onLayout}>
         <NavigationContainerComponent />
+        {/* <SettingsScreen/> */}
       </SafeAreaProvider>
     </Provider>
   );

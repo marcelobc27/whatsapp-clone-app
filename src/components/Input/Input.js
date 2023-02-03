@@ -1,10 +1,13 @@
-import react from "react";
+import react, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import colors from "../../../constants/colors";
 
 const Input = (props) => {
+  const [value, setValue] = useState(props.initialValue)
+
   const onChangeText = (text) => {
+    setValue(text)
     props.onInputChanged(props.id, text)
   }
 
@@ -23,7 +26,9 @@ const Input = (props) => {
         <TextInput  
         {...props}
         style={styles.input} 
-        onChangeText={onChangeText}/>
+        onChangeText={onChangeText}
+        value={value}
+        />
       </View>
       {props.errorText && (
         <View style={styles.errorContainer}>
