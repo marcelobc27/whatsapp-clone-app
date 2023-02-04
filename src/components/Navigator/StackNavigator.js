@@ -1,15 +1,17 @@
 import React from "react";
-import { createStackNavigator } from '@react-navigation/stack';
 
 import ChatSettingsScreen from "../../screens/ChatSettingsScreen";
 import TabNavigator from "./TabNavigator";
 import ChatScreen from "../../screens/ChatScreen";
+import NewChatScreen from "../../screens/NewChatScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Stack = createStackNavigator()
+const Stack = createNativeStackNavigator()
 
 const StackNavigator = () => {
   return (
     <Stack.Navigator>
+      <Stack.Group>
       <Stack.Screen
         name="Home"
         component={TabNavigator}
@@ -29,6 +31,13 @@ const StackNavigator = () => {
           headerTitle: "",
         }}
       />
+      </Stack.Group>
+      <Stack.Group screenOptions={{presentation: 'modal'}}>
+      <Stack.Screen
+        name="NewChat"
+        component={NewChatScreen}
+      />
+      </Stack.Group>
     </Stack.Navigator>
   );
 };

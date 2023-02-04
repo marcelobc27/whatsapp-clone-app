@@ -98,79 +98,84 @@ const SettingsScreen = (props) => {
     <PageContainer style={styles.container}>
       <PageTitle text="Setting" />
       <ScrollView contentContainerStyle={styles.formContainer}>
-      <ProfileImage size={80} userId={userData.userId} uri={userData.profilePicture}/>
-      <Input
-        id="firstName"
-        label="First Name"
-        icon="user"
-        autoCapitalize="none"
-        iconPack={Feather}
-        iconSize={24}
-        onInputChanged={inputChangedHandler}
-        initialValue={userData.firstName}
-        errorText={formState.inputValidities["firstName"]}
-      />
-      <Input
-        id="lastName"
-        label="Last Name"
-        icon="user"
-        autoCapitalize="none"
-        iconPack={Feather}
-        iconSize={24}
-        onInputChanged={inputChangedHandler}
-        initialValue={userData.lastName}
-        errorText={formState.inputValidities["lastName"]}
-      />
-      <Input
-        id="email"
-        label="Email"
-        icon="mail"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        iconPack={Feather}
-        iconSize={24}
-        onInputChanged={inputChangedHandler}
-        initialValue={userData.email}
-        errorText={formState.inputValidities["email"]}
-      />
-      <Input
-        id="about"
-        label="About"
-        icon="user"
-        autoCapitalize="none"
-        iconPack={Feather}
-        iconSize={24}
-        onInputChanged={inputChangedHandler}
-        initialValue={userData.about}
-        errorText={formState.inputValidities["about"]}
-      />
-      <View style={styles.actionButtonsWrapper}>
-        {showSuccessMessage && (
-          <Text style={styles.saveMessageText}>Saved!</Text>
-        )}
-        {isLoading ? (
-          <ActivityIndicator
-            size={"small"}
-            color={colors.primary}
-            style={styles.activityIndicator}
-          />
-        ) : (
-          hasChanges() && (
-            <SubmitButton
-              title="Save"
-              onPress={saveHandler}
-              style={styles.saveButton}
-              disabled={!formState.formIsValid}
+        <ProfileImage
+          size={80}
+          userId={userData.userId}
+          uri={userData.profilePicture}
+          showEditbutton={true}
+        />
+        <Input
+          id="firstName"
+          label="First Name"
+          icon="user"
+          autoCapitalize="none"
+          iconPack={Feather}
+          iconSize={24}
+          onInputChanged={inputChangedHandler}
+          initialValue={userData.firstName}
+          errorText={formState.inputValidities["firstName"]}
+        />
+        <Input
+          id="lastName"
+          label="Last Name"
+          icon="user"
+          autoCapitalize="none"
+          iconPack={Feather}
+          iconSize={24}
+          onInputChanged={inputChangedHandler}
+          initialValue={userData.lastName}
+          errorText={formState.inputValidities["lastName"]}
+        />
+        <Input
+          id="email"
+          label="Email"
+          icon="mail"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          iconPack={Feather}
+          iconSize={24}
+          onInputChanged={inputChangedHandler}
+          initialValue={userData.email}
+          errorText={formState.inputValidities["email"]}
+        />
+        <Input
+          id="about"
+          label="About"
+          icon="user"
+          autoCapitalize="none"
+          iconPack={Feather}
+          iconSize={24}
+          onInputChanged={inputChangedHandler}
+          initialValue={userData.about}
+          errorText={formState.inputValidities["about"]}
+        />
+        <View style={styles.actionButtonsWrapper}>
+          {showSuccessMessage && (
+            <Text style={styles.saveMessageText}>Saved!</Text>
+          )}
+          {isLoading ? (
+            <ActivityIndicator
+              size={"small"}
+              color={colors.primary}
+              style={styles.activityIndicator}
             />
-          )
-        )}
-      </View>
-      <SubmitButton
-        title="Logout"
-        onPress={() => dispatch(userLogout())}
-        style={styles.saveButton}
-        color={colors.nearlyRed}
-      />
+          ) : (
+            hasChanges() && (
+              <SubmitButton
+                title="Save"
+                onPress={saveHandler}
+                style={styles.saveButton}
+                disabled={!formState.formIsValid}
+              />
+            )
+          )}
+        </View>
+        <SubmitButton
+          title="Logout"
+          onPress={() => dispatch(userLogout())}
+          style={styles.saveButton}
+          color={colors.nearlyRed}
+        />
       </ScrollView>
     </PageContainer>
   );
@@ -189,15 +194,15 @@ const styles = StyleSheet.create({
   },
   actionButtonsWrapper: {
     marginTop: 20,
-    width: '100%'
+    width: "100%",
   },
   saveMessageText: {
     fontSize: 20,
     fontFamily: "bold",
   },
   formContainer: {
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 });
 
 export default SettingsScreen;

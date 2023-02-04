@@ -21,8 +21,10 @@ import { updatedLoggedInUserData } from "../../store/authSlice";
 const ProfileImage = (props) => {
   const dispatch = useDispatch();
   const source = props.uri ? { uri: props.uri } : userImage;
+
   const [image, setImage] = useState(source);
   const [isLoading, setIsLoading] = useState(false);
+  const showEditButton = props.showEditButton && props.showEditButton === true;
   const userId = props.userId;
 
   const pickImage = async () => {
@@ -50,10 +52,18 @@ const ProfileImage = (props) => {
     }
   };
 
+  const Container = showEditButton ? TouchableOpacity : View;
+
   return (
-    <TouchableOpacity onPress={pickImage}>
+    <Container onPress={pickImage}>
       {isLoading ? (
-        <View style={{height: props.size, width: props.size, ...styles.loadingContainer}}>
+        <View
+          style={{
+            height: props.size,
+            width: props.size,
+            ...styles.loadingContainer,
+          }}
+        >
           <ActivityIndicator size={"small"} color={colors.primary} />
         </View>
       ) : (
@@ -65,10 +75,13 @@ const ProfileImage = (props) => {
           }}
         />
       )}
-      <View style={styles.editIconContainer}>
-        <Feather name="edit-3" size={15} color="black" />
-      </View>
-    </TouchableOpacity>
+
+      {showEditButton && !isLoading && (
+        <View style={styles.editIconContainer}>
+          <Feather name="edit-3" size={15} color="black" />
+        </View>
+      )}
+    </Container>
   );
 };
 
@@ -84,9 +97,9 @@ const styles = StyleSheet.create({
     right: 0,
   },
   loadingContainer: {
-    alignItems: "center", 
-    justifyContent: "center"
-  }
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default ProfileImage;
