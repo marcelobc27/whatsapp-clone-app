@@ -8,5 +8,7 @@ export default {
   textColor: '#1C1E21',
   red: '#FF0000',
   nearlyRed: '#e74C3C',
-  primary: '#32D48E'
+  primary: '#32D48E',
+  extraLightGreen: "#65644A",
+  beige: '#FEF5C3'
 }

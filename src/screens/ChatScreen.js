@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,13 +17,49 @@ import { Feather } from '@expo/vector-icons';
 
 import backgroundImage from "../../assets/images/droplet.jpeg";
 import colors from "../../constants/colors";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import PageContainer from "../components/PageContainer/PageContainer";
+import Bubble from "../components/Bubble/Bubble";
+import { createChat } from "../utils/Actions/chatActions";
 
 const ChatScreen = (props) => {
+  const userData = useSelector((state) => state.auth.userData);
+  const storedUsers = useSelector(state => state.users.storedUsers)
+  const [chatUsers, setChatUsers] = useState([])
+  const [chatId, setChatId] = useState(props.route?.params?.chatId)
   const [messageText, setMessageText] = useState("")
+  const chatData = props.route?.params?.newChatData;
+  const navigation = useNavigation()
 
-  const sendMessage = useCallback(() => {
+  const getChatTitleFromName = () => {
+    const otherUserId = chatUsers.find(uid => uid !== userData)
+    const otherUserData = storedUsers[otherUserId]
+
+    return otherUserData && `${otherUserData.firstName} ${otherUserData.lastName}`
+  }
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: getChatTitleFromName() 
+    })
+
+    setChatUsers(chatData.users)
+  }, [chatUsers])
+
+  const sendMessage = useCallback(async() => {
+    try {
+      let id = chatId
+
+      if(!id){
+        id = await createChat(userData.userId, props.route.params.newChatData)
+        setChatId(id)
+      }
+    } catch (error) {
+      
+    }
     setMessageText("");
-  }, [messageText])
+  }, [messageText, chatId])
 
   return (
     <SafeAreaView
@@ -37,7 +73,13 @@ const ChatScreen = (props) => {
       <ImageBackground
         source={backgroundImage}
         style={styles.backgroundImage}
-      ></ImageBackground>
+      >
+        <PageContainer style={{backgroundColor: 'transparent'}}>
+          {
+            !chatId && <Bubble text="This is a new chat, Say hi!" type="system"/>
+          }
+        </PageContainer>
+      </ImageBackground>
       <View style={styles.inputContainer}>
         <TouchableOpacity
           style={styles.mediaButton}
@@ -78,10 +120,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   keyboardAvoidingView: {
-    flex: 1
+    flex: 1,
+    width: "100%"
   },
   backgroundImage: {
     flex: 1,
+    width: '100%',
     backgroundColor: colors.blue
   },
   inputContainer: {
