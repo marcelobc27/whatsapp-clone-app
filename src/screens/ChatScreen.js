@@ -26,10 +26,11 @@ import { createChat } from "../utils/Actions/chatActions";
 const ChatScreen = (props) => {
   const userData = useSelector((state) => state.auth.userData);
   const storedUsers = useSelector(state => state.users.storedUsers)
+  const storedChats = useSelector(state => state.chats.chatsData)
   const [chatUsers, setChatUsers] = useState([])
   const [chatId, setChatId] = useState(props.route?.params?.chatId)
   const [messageText, setMessageText] = useState("")
-  const chatData = props.route?.params?.newChatData;
+  const chatData = (chatId && storedChats[chatId]) || props.route?.params?.newChatData;
   const navigation = useNavigation()
 
   const getChatTitleFromName = () => {
