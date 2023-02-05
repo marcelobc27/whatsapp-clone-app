@@ -7,6 +7,7 @@ const Bubble = (props) => {
 
   const bubbleStyle = { ...styles.container };
   const textStyle = { ...styles.text };
+  const wrapperStyle = { ...styles.wrapperStyle };
 
   switch (type) {
     case "system":
@@ -15,11 +16,27 @@ const Bubble = (props) => {
       bubbleStyle.alignItems = "center";
       bubbleStyle.marginTop = 10;
       break;
+    case "error":
+      textStyle.color = colors.white;
+      bubbleStyle.backgroundColor = colors.red;
+      bubbleStyle.alignItems = "center";
+      bubbleStyle.marginTop = 10;
+      break;
+    case "myMessage":
+      wrapperStyle.justifyContent = "flex-end";
+      bubbleStyle.backgroundColor = colors.greenVariation;
+      bubbleStyle.maxWidth = "90";
+      break;
+    case "theirMessage":
+      wrapperStyle.justifyContent = "flex-start";
+      bubbleStyle.backgroundColor = colors.beige;
+      bubbleStyle.maxWidth = "90";
+      break;
     default:
       break;
   }
   return (
-    <View style={styles.wrapperStyle}>
+    <View style={wrapperStyle}>
       <View style={bubbleStyle}>
         <Text style={textStyle}>{text}</Text>
       </View>

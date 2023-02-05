@@ -10,5 +10,6 @@ export default {
   nearlyRed: '#e74C3C',
   primary: '#32D48E',
   extraLightGreen: "#65644A",
-  beige: '#FEF5C3'
+  beige: '#FEF5C3',
+  greenVariation: "#E7FED6"
 }
