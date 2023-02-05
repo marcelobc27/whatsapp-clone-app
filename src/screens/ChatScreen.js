@@ -21,12 +21,13 @@ import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import PageContainer from "../components/PageContainer/PageContainer";
 import Bubble from "../components/Bubble/Bubble";
-import { createChat } from "../utils/Actions/chatActions";
+import { createChat, sendTextMessage } from "../utils/Actions/chatActions";
 
 const ChatScreen = (props) => {
   const userData = useSelector((state) => state.auth.userData);
   const storedUsers = useSelector(state => state.users.storedUsers)
   const storedChats = useSelector(state => state.chats.chatsData)
+  const chatMessages = useSelector(state => state.messages.messagesData)
   const [chatUsers, setChatUsers] = useState([])
   const [chatId, setChatId] = useState(props.route?.params?.chatId)
   const [messageText, setMessageText] = useState("")
@@ -56,8 +57,10 @@ const ChatScreen = (props) => {
         id = await createChat(userData.userId, props.route.params.newChatData)
         setChatId(id)
       }
+
+      await sendTextMessage(chatId, userData.userId, messageText)
     } catch (error) {
-      
+      console.log(error)
     }
     setMessageText("");
   }, [messageText, chatId])

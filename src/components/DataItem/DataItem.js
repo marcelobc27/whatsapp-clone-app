@@ -14,7 +14,7 @@ const DataItem = (props) => {
         />
         <View style={styles.textContainer}>
           <Text numberOfLines={1} style={styles.title}>{title}</Text>
-          <Text numberOfLines={1} style={styles.subtitle}>{subTitle}</Text>
+          <Text numberOfLines={1} style={styles.subTitle}>{subTitle}</Text>
         </View>
       </View>
     </TouchableWithoutFeedback>

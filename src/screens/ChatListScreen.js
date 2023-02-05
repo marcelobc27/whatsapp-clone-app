@@ -68,13 +68,13 @@ const ChatListScreen = (props) => {
           if (!otherUser) return;
 
           const title = `${otherUser.firstName} ${otherUser.lastName}`;
-          const subtitle = "This will be a message";
+          const subtitle = chatData.latestMessageText || "New Chat";
           const image = otherUser.profilePicture;
 
           return (
             <DataItem
               title={title}
-              subtitle={subtitle}
+              subTitle={subtitle}
               image={image}
               onPress={() => navigation.navigate("ChatScreen", { chatId })}
             />
