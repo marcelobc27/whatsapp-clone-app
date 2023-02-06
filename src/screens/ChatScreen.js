@@ -23,6 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 import PageContainer from "../components/PageContainer/PageContainer";
 import Bubble from "../components/Bubble/Bubble";
 import { createChat, sendTextMessage } from "../utils/Actions/chatActions";
+import ReplyTo from "../components/ReplyTo/ReplyTo";
 
 const ChatScreen = (props) => {
   const [chatUsers, setChatUsers] = useState([])
@@ -79,8 +80,9 @@ const ChatScreen = (props) => {
         setChatId(id)
       }
 
-      await sendTextMessage(chatId, userData.userId, messageText)
+      await sendTextMessage(chatId, userData.userId, messageText, replyingTo && replyingTo.key)
       setMessageText("");
+      setReplyingTo(null)
     } catch (error) {
       console.log(error)
       setErrorBannerText("Message failed to send")
@@ -130,7 +132,8 @@ const ChatScreen = (props) => {
                     userId={userData.userId}
                     chatId={chatId}
                     date={message.sentAt}
-                    setReply={() => setReplyingTo(message.text)}
+                    setReply={() => setReplyingTo(message)}
+                    replyingTo={message.replyTo && chatMessages.find(i => i.key === message.replyTo)}
                   />
                 )
               }}
@@ -139,7 +142,11 @@ const ChatScreen = (props) => {
         </PageContainer>
         {
           replyingTo && (
-            <Text>{replyingTo}</Text>
+            <ReplyTo 
+              text={replyingTo.text}
+              user={storedUsers[replyingTo.sentBy]}
+              onCancel={() => setReplyingTo(null)}
+            />
           )
         }
       </ImageBackground>

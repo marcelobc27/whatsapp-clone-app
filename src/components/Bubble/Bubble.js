@@ -43,11 +43,13 @@ const MenuItem = (props) => {
 };
 
 const Bubble = (props) => {
-  const { text, type, messageId, chatId, userId, date, setReply } = props;
+  const { text, type, messageId, chatId, userId, date, setReply, replyingTo, name } =
+    props;
 
   const starredMessages = useSelector(
     (state) => state.messages.starredMessages[chatId] ?? {}
   );
+  const storedUsers = useSelector((state) => state.users.storedUsers);
 
   const bubbleStyle = { ...styles.container };
   const textStyle = { ...styles.text };
@@ -60,7 +62,7 @@ const Bubble = (props) => {
     type === "myMessage" || "theirMessage" ? TouchableWithoutFeedback : View;
 
   let isUserMessage = false;
-  const dateString = formatAmPm(date);
+  const dateString = date && formatAmPm(date);
 
   switch (type) {
     case "system":
@@ -87,6 +89,10 @@ const Bubble = (props) => {
       // bubbleStyle.maxWidth = "90";
       isUserMessage = true;
       break;
+    case "reply":
+      bubbleStyle.backgroundColor = colors.almostGrey;
+      // bubbleStyle.maxWidth = "90";
+      break;
     default:
       break;
   }
@@ -96,6 +102,7 @@ const Bubble = (props) => {
   };
 
   const isStarred = isUserMessage && starredMessages[messageId] !== undefined;
+  const replyingToUser = replyingTo && storedUsers[replyingTo.sentBy];
 
   return (
     <View style={wrapperStyle}>
@@ -106,6 +113,17 @@ const Bubble = (props) => {
         style={styles.touchableWithoutFeedback}
       >
         <View style={bubbleStyle}>
+          {
+            name && 
+            <Text style={styles.name}>{name}</Text>
+          }
+          {replyingToUser && (
+            <Bubble
+              type="reply"
+              text={replyingTo.text}
+              name={`${replyingToUser.firstName} ${replyingToUser.lastName}`}
+            />
+          )}
           <Text style={textStyle}>{text}</Text>
           {dateString && (
             <View style={styles.timeContainer}>
@@ -134,7 +152,7 @@ const Bubble = (props) => {
                 iconPack={isStarred ? FontAwesome : Feather}
                 onSelect={() => StarMessage(messageId, chatId, userId)}
               />
-               <MenuItem
+              <MenuItem
                 text="Reply to"
                 icon={"arrow-left"}
                 onSelect={setReply}
@@ -183,10 +201,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   time: {
-    fontFamily: 'regular',
+    fontFamily: "regular",
     letterSpacing: 0.3,
     color: colors.grey,
-    fontSize: 12
+    fontSize: 12,
+  },
+  name: {
+    fontFamily: 'medium',
+    letterSpacing: 0.3
   }
 });
 
