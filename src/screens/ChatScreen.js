@@ -29,6 +29,7 @@ const ChatScreen = (props) => {
   const [chatId, setChatId] = useState(props.route?.params?.chatId)
   const [messageText, setMessageText] = useState("")
   const [errorBannerText, setErrorBannerText] = useState("")
+  const [replyingTo, setReplyingTo] = useState("")
 
   const userData = useSelector((state) => state.auth.userData);
   const storedUsers = useSelector(state => state.users.storedUsers)
@@ -72,7 +73,7 @@ const ChatScreen = (props) => {
   const sendMessage = useCallback(async() => {
     try {
       let id = chatId
-
+      
       if(!id){
         id = await createChat(userData.userId, props.route.params.newChatData)
         setChatId(id)
@@ -125,12 +126,22 @@ const ChatScreen = (props) => {
                   <Bubble
                     type={messageType}
                     text={message.text}
+                    messageId={message.key}
+                    userId={userData.userId}
+                    chatId={chatId}
+                    date={message.sentAt}
+                    setReply={() => setReplyingTo(message.text)}
                   />
                 )
               }}
             />
           }
         </PageContainer>
+        {
+          replyingTo && (
+            <Text>{replyingTo}</Text>
+          )
+        }
       </ImageBackground>
       <View style={styles.inputContainer}>
         <TouchableOpacity

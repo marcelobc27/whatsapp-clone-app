@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { store } from "./src/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import { MenuProvider } from "react-native-popup-menu";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -57,21 +58,10 @@ export default function App() {
   return (
     <Provider store={store}>
       <SafeAreaProvider onLayout={onLayout}>
+        <MenuProvider>
         <NavigationContainerComponent />
-        {/* <SettingsScreen/> */}
+        </MenuProvider>
       </SafeAreaProvider>
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textStyle: {
-    fontFamily: "black",
-  },
-});

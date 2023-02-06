@@ -51,6 +51,7 @@ const ChatListScreen = (props) => {
     navigation.navigate("ChatScreen", navigationProps);
   }, [props.route?.params]);
 
+
   return (
     <PageContainer>
       <PageTitle text="Chats" />

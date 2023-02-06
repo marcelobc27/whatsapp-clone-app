@@ -7,13 +7,13 @@ import NewChatScreen from "../../screens/NewChatScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../../../firebaseConfig";
-import { child, get, getDatabase, off, onValue, ref } from "firebase/database";
+import { child, get, getDatabase, off, onValue, query, ref } from "firebase/database";
 import { setChatsData } from "../../store/chatSlice";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import colors from "../../../constants/colors";
 import commonStyles from "../../../constants/commonStyles";
 import { setStoredUsers } from "../../store/userSlice";
-import { setChatMessages } from "../../store/messagesSlice";
+import { setChatMessages, setStarredMessages } from "../../store/messagesSlice";
 
 const Stack = createNativeStackNavigator();
 
@@ -90,6 +90,13 @@ const StackNavigator = () => {
         <ActivityIndicator size={"large"} color={colors.primary}/>
       </View>
     }
+
+    const userStarredMessagesRef = child(dbRef, `userStarredMessages/${userData.userId}`)
+    refs.push(userStarredMessagesRef)
+    onValue(userStarredMessagesRef, querySnapshot => {
+      const starredMessages = querySnapshot.val() ?? {}
+      dispatch(setStarredMessages({ starredMessages }))
+    })
 
     return () => {
       console.log("Unsubscribing firebase listeners")

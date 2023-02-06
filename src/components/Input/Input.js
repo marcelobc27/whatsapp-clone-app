@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     color: colors.textColor,
     fontFamily: "regular",
     letterSpacing: 0.3,
-    fontSize: `${Platform.OS !== 'web' ? '12px' : '30px'}`,
+    fontSize: 14,
     paddingTop: 0,
   },
   icon: {
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.red,
     fontFamily: "regular",
-    fontSize: 13,
+    fontSize: 14,
     letterSpacing: 0.3,
   },
 });
