@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons';
 import userImage from "../../../assets/images/userImage.jpeg";
 import colors from "../../../constants/colors";
 import {
@@ -25,6 +26,8 @@ const ProfileImage = (props) => {
   const [image, setImage] = useState(source);
   const [isLoading, setIsLoading] = useState(false);
   const showEditButton = props.showEditButton && props.showEditButton === true;
+  const showRemoveButton =
+    props.showRemoveButton && props.showRemoveButton === true;
   const userId = props.userId;
 
   const pickImage = async () => {
@@ -52,10 +55,10 @@ const ProfileImage = (props) => {
     }
   };
 
-  const Container = showEditButton ? TouchableOpacity : View;
+  const Container = props.onPress || showEditButton ? TouchableOpacity : View;
 
   return (
-    <Container onPress={pickImage}>
+    <Container style={props.style} onPress={props.onPress || pickImage}>
       {isLoading ? (
         <View
           style={{
@@ -78,7 +81,13 @@ const ProfileImage = (props) => {
 
       {showEditButton && !isLoading && (
         <View style={styles.editIconContainer}>
-          <Feather name="edit-3" size={15} color="black" />
+          <Feather name="edit-3" size={16} color="black" />
+        </View>
+      )}
+
+      {showRemoveButton && !isLoading && (
+        <View style={styles.removeIconContainer}>
+          <AntDesign name="closecircle" size={16} color="black" />
         </View>
       )}
     </Container>
@@ -95,6 +104,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: 0,
+  },
+  removeIconContainer: {
+    position: "absolute",
+    bottom: -3,
+    right: -3,
+    padding: 3
   },
   loadingContainer: {
     alignItems: "center",
