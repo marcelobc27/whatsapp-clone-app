@@ -94,6 +94,8 @@ const SettingsScreen = (props) => {
     );
   };
 
+  console.log(userData.profilePicture)
+
   return (
     <PageContainer style={styles.container}>
       <PageTitle text="Setting" />
@@ -102,7 +104,7 @@ const SettingsScreen = (props) => {
           size={80}
           userId={userData.userId}
           uri={userData.profilePicture}
-          showEditbutton={true}
+          showEditButton={true}
         />
         <Input
           id="firstName"
