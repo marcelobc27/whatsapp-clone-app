@@ -17,17 +17,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Feather } from "@expo/vector-icons";
-
-import backgroundImage from "../../assets/images/droplet.jpeg";
-import colors from "../../constants/colors";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import AwesomeAlert from "react-native-awesome-alerts";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import { createChat, sendImageMessage, sendTextMessage } from "../utils/Actions/chatActions";
+import { launchImagePicker, openCamera, uploadImageAsync } from "../utils/ImagePickerHelper";
 import PageContainer from "../components/PageContainer/PageContainer";
 import Bubble from "../components/Bubble/Bubble";
-import { createChat, sendImageMessage, sendTextMessage } from "../utils/Actions/chatActions";
 import ReplyTo from "../components/ReplyTo/ReplyTo";
-import { launchImagePicker, openCamera, uploadImageAsync } from "../utils/ImagePickerHelper";
-import AwesomeAlert from "react-native-awesome-alerts";
+import CustomHeaderButton from "../components/CustomHeaderButton/CustomHeaderButton";
+import colors from "../../constants/colors";
+import backgroundImage from "../../assets/images/droplet.jpeg";
 
 const ChatScreen = (props) => {
   const [chatUsers, setChatUsers] = useState([]);
@@ -66,7 +67,7 @@ const ChatScreen = (props) => {
   const navigation = useNavigation();
 
   const getChatTitleFromName = () => {
-    const otherUserId = chatUsers.find((uid) => uid !== userData);
+    const otherUserId = chatUsers.find((uid) => uid !== userData.userId);
     const otherUserData = storedUsers[otherUserId];
 
     return (
@@ -79,6 +80,27 @@ const ChatScreen = (props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: title,
+      headerRight: () => {
+        return(
+          <HeaderButtons headerButtonComponent={CustomHeaderButton}>
+            {
+              chatId && 
+              <Item
+                title="Chat Settings"
+                iconName="settings-outline"
+                color={colors.blue}
+                onPress={() => {
+                  chatData.isGroupChat
+                  ? navigation.navigate("ChatSettings", { chatId })
+                  : navigation.navigate("ContactScreen", {
+                    uid: chatUsers.find((uid) => uid !== userData.userId) 
+                  })
+                }}
+              />
+            }
+          </HeaderButtons>
+        )
+      }
     });
 
     setChatUsers(chatData.users);

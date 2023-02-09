@@ -23,6 +23,12 @@ const DataItem = (props) => {
             <Ionicons name="checkmark" size={18} color="black" />
           </View>
         }
+        {
+          type === "link" &&
+          <View>
+            <Ionicons name="chevron-forward-outline" size={18} color="black" />
+          </View>
+        }
       </View>
     </TouchableWithoutFeedback>
   );

@@ -18,6 +18,7 @@ import {
 import { updateSignedInUserData } from "../../utils/Actions/authActions";
 import { useDispatch } from "react-redux";
 import { updatedLoggedInUserData } from "../../store/authSlice";
+import { updateChatData } from "../../utils/Actions/chatActions";
 
 const ProfileImage = (props) => {
   const dispatch = useDispatch();
@@ -26,9 +27,9 @@ const ProfileImage = (props) => {
   const [image, setImage] = useState(source);
   const [isLoading, setIsLoading] = useState(false);
   const showEditButton = props.showEditButton && props.showEditButton === true;
-  const showRemoveButton =
-    props.showRemoveButton && props.showRemoveButton === true;
+  const showRemoveButton = props.showRemoveButton && props.showRemoveButton === true;
   const userId = props.userId;
+  const chatId = props.chatId;
 
   const pickImage = async () => {
     try {
@@ -36,17 +37,23 @@ const ProfileImage = (props) => {
       if (!tempUri) return;
 
       setIsLoading(true);
-      const uploadUrl = await uploadImageAsync(tempUri);
+      const uploadUrl = await uploadImageAsync(tempUri, chatId !== undefined);
       setIsLoading(false);
 
       if (!uploadUrl) {
         throw new Error("Could not upload image");
       }
 
-      const newData = { profilePicture: uploadUrl };
+      if(chatId){
+        await updateChatData(chatId, userId, { chatImage: uploadUrl})
+      } else {
+        
+              const newData = { profilePicture: uploadUrl };
+        
+              await updateSignedInUserData(userId, newData);
+              dispatch(updatedLoggedInUserData({ newData }));
 
-      await updateSignedInUserData(userId, newData);
-      dispatch(updatedLoggedInUserData({ newData }));
+      }
 
       setImage({ uri: uploadUrl });
     } catch (error) {
