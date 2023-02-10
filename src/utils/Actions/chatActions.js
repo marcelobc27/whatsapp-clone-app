@@ -9,6 +9,7 @@ import {
   update,
 } from "firebase/database";
 import { getFirebaseApp } from "../../../firebaseConfig";
+import { deleteUserChat, getUserChats } from "./userActions";
 
 export const createChat = async (loggedInUserId, chatData) => {
   const newChatData = {
@@ -38,7 +39,15 @@ export const sendTextMessage = async (
   messageText,
   replyTo
 ) => {
-  await sendMessage(chatId, senderId, messageText, null, replyTo);
+  await sendMessage(chatId, senderId, messageText, null, replyTo, null);
+};
+
+export const sendInfoMessage = async (
+  chatId,
+  senderId,
+  messageText,
+) => {
+  await sendMessage(chatId, senderId, messageText, null, null, "info");
 };
 
 export const sendImageMessage = async (
@@ -47,7 +56,7 @@ export const sendImageMessage = async (
   imageUrl,
   replyTo
 ) => {
-  await sendMessage(chatId, senderId, "Image", imageUrl, replyTo);
+  await sendMessage(chatId, senderId, "Image", imageUrl, replyTo, null);
 };
 
 export const updateChatData = async (chatId, userId, chatData) => {
@@ -67,7 +76,8 @@ const sendMessage = async (
   senderId,
   messageText,
   imageUrl,
-  replyTo
+  replyTo, 
+  type
 ) => {
   const app = getFirebaseApp();
   const dbRef = ref(getDatabase(app));
@@ -85,6 +95,10 @@ const sendMessage = async (
 
   if (imageUrl) {
     messageData.imageUrl = imageUrl;
+  }
+
+  if(type){
+    messageData.type = type
   }
 
   await push(messageRef, messageData);
@@ -123,3 +137,27 @@ export const StarMessage = async (messageId, chatId, userId) => {
     console.log(error);
   }
 };
+
+export const removeUserFromChat = async (userLoggedInData, userToRemoveData, chatData) => {
+  const userToRemoveId = userToRemoveData.userId;
+  const newUsers = chatData.users.filter(uid => uid !== userToRemoveId)
+
+  await updateChatData(chatData.key, userLoggedInData.userId, {users: newUsers})
+
+  const userChats = await getUserChats(userToRemoveId);
+
+  for(const key in userChats){
+    const currentChatId = userChats[key];
+
+    if(currentChatId === chatData.key){
+      await deleteUserChat(userToRemoveId, key)
+      break;
+    }
+  }
+
+  const messageText = userLoggedInData.userId === userToRemoveData.userId 
+  ? `${userLoggedInData.firstName} left the chat`
+  : `${userLoggedInData.firstName} removed ${userToRemoveData.firstName} from the chat`
+
+  await sendInfoMessage(chatData.key, userLoggedInData.userId, messageText)
+}

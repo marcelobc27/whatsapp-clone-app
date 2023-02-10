@@ -1,21 +1,28 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import colors from "../../constants/colors";
 import DataItem from "../components/DataItem/DataItem";
 import PageContainer from "../components/PageContainer/PageContainer";
 import PageTitle from "../components/PageTitle/PageTitle";
 import ProfileImage from "../components/ProfileImage/ProfileImage";
+import SubmitButton from "../components/SubmitButton/SubmitButton";
+import { removeUserFromChat } from "../utils/Actions/chatActions";
 import { getUserChats } from "../utils/Actions/userActions";
 
 const ContactScreen = (props) => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const storedUsers = useSelector((state) => state.users.storedUsers);
+  const userData = useSelector(state => state.auth.userData);
   const currentUser = storedUsers[props.route.params.uid];
 
   const storedChats = useSelector((state) => state.chats.chatsData);
   const [commonChats, setCommonChats] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const chatId = props.route.params.chatId;
+  const chatData = chatId && storedChats[chatId];
 
   useEffect(() => {
     const getCommonUserChats = async () => {
@@ -29,6 +36,18 @@ const ContactScreen = (props) => {
 
     getCommonUserChats();
   }, []);
+
+  const removeFromChat = useCallback( async () => {
+    try {
+      setIsLoading(true);
+      await removeUserFromChat(userData, currentUser, chatData)
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigation, isLoading]);
 
   return (
     <PageContainer>
@@ -51,23 +70,31 @@ const ContactScreen = (props) => {
             {commonChats.length} {commonChats.length === 1 ? "Group" : "Groups"}{" "}
             Group in common
           </Text>
-          {
-            commonChats.map(cid => {
-              const chatData = storedChats[cid]
-              return(
-                <DataItem
-                  key={cid}
-                  title={chatData.chatName}
-                  subtitle={chatData.latestMessageData}
-                  type="link"
-                  onPress={() => navigation.push("ChatScreen", { chatId: cid })}
-                  image={chatData.chatImage}
-                />
-              )
-            })
-          }
+          {commonChats.map((cid) => {
+            const chatData = storedChats[cid];
+            return (
+              <DataItem
+                key={cid}
+                title={chatData.chatName}
+                subtitle={chatData.latestMessageData}
+                type="link"
+                onPress={() => navigation.push("ChatScreen", { chatId: cid })}
+                image={chatData.chatImage}
+              />
+            );
+          })}
         </>
       )}
+      {chatData && chatData.isGroupChat && 
+      (isLoading ? (
+        <ActivityIndicator size={"small"} color={colors.primary} />
+      ) : (
+        <SubmitButton
+          title="Remove from Chat"
+          color={colors.red}
+          onPress={removeFromChat}
+        />
+      ))}
     </PageContainer>
   );
 };
@@ -88,7 +115,7 @@ const styles = StyleSheet.create({
     fontFamily: "bold",
     letterSpacing: 0.3,
     color: colors.textColor,
-    marginVertical: 8
+    marginVertical: 8,
   },
 });
 
