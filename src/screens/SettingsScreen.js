@@ -94,8 +94,6 @@ const SettingsScreen = (props) => {
     );
   };
 
-  console.log(userData.profilePicture)
-
   return (
     <PageContainer style={styles.container}>
       <PageTitle text="Setting" />

@@ -60,7 +60,8 @@ const ContactScreen = (props) => {
                   title={chatData.chatName}
                   subtitle={chatData.latestMessageData}
                   type="link"
-                  onPress={() => navigation.push("ChatScreen", { chatId: cid })} 
+                  onPress={() => navigation.push("ChatScreen", { chatId: cid })}
+                  image={chatData.chatImage}
                 />
               )
             })

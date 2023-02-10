@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import CustomHeaderButton from "../components/CustomHeaderButton/CustomHeaderButton";
 import { useSelector } from "react-redux";
+import CustomHeaderButton from "../components/CustomHeaderButton/CustomHeaderButton";
 import DataItem from "../components/DataItem/DataItem";
 import PageContainer from "../components/PageContainer/PageContainer";
 import PageTitle from "../components/PageTitle/PageTitle";
@@ -105,6 +105,7 @@ const ChatListScreen = (props) => {
 
           if(isGroupChat){
             title = chatData.chatName;
+            image = chatData.chatImage;
           } else {
             const otherUserId = chatData.users.find(
               (uid) => uid !== userData.userId

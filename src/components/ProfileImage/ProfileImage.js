@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
 import userImage from "../../../assets/images/userImage.jpeg";
 import colors from "../../../constants/colors";
 import {
@@ -27,7 +27,8 @@ const ProfileImage = (props) => {
   const [image, setImage] = useState(source);
   const [isLoading, setIsLoading] = useState(false);
   const showEditButton = props.showEditButton && props.showEditButton === true;
-  const showRemoveButton = props.showRemoveButton && props.showRemoveButton === true;
+  const showRemoveButton =
+    props.showRemoveButton && props.showRemoveButton === true;
   const userId = props.userId;
   const chatId = props.chatId;
 
@@ -44,15 +45,13 @@ const ProfileImage = (props) => {
         throw new Error("Could not upload image");
       }
 
-      if(chatId){
-        await updateChatData(chatId, userId, { chatImage: uploadUrl})
+      if (chatId) {
+        await updateChatData(chatId, userId, { chatImage: uploadUrl });
       } else {
-        
-              const newData = { profilePicture: uploadUrl };
-        
-              await updateSignedInUserData(userId, newData);
-              dispatch(updatedLoggedInUserData({ newData }));
+        const newData = { profilePicture: uploadUrl };
 
+        await updateSignedInUserData(userId, newData);
+        dispatch(updatedLoggedInUserData({ newData }));
       }
 
       setImage({ uri: uploadUrl });
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -3,
     right: -3,
-    padding: 3
+    padding: 3,
   },
   loadingContainer: {
     alignItems: "center",

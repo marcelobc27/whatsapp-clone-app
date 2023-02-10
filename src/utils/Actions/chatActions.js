@@ -51,7 +51,6 @@ export const sendImageMessage = async (
 };
 
 export const updateChatData = async (chatId, userId, chatData) => {
-  try {
     const app = getFirebaseApp();
     const dbRef = ref(getDatabase(app));
     const chatRef = child(dbRef, `chats/${chatId}`);
@@ -61,9 +60,6 @@ export const updateChatData = async (chatId, userId, chatData) => {
       updatedAt: new Date().toISOString(),
       updatedBy: userId
     })
-  } catch (error) {
-    console.log(error)
-  }
 }
 
 const sendMessage = async (
