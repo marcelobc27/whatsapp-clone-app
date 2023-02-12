@@ -6,11 +6,14 @@ import { Ionicons, AntDesign } from '@expo/vector-icons';
 
 const DataItem = (props) => {
   const {title, subTitle, image, type, isChecked, icon} = props
+
+  const hideImage = props.hideImage && props.hideImage === true;
+
   return (
     <TouchableWithoutFeedback onPress={props.onPress}>
       <View style={styles.container}>
         { 
-          !icon &&
+          !icon && !hideImage &&
           <ProfileImage
           uri={image}
           size={40}

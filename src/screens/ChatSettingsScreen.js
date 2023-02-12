@@ -120,7 +120,7 @@ const ChatSettingsScreen = (props) => {
             type="button"
           />
           {
-            chatData.users.map(uid => {
+            chatData.users.slice(0, 4).map(uid => {
               const currentUser = storedUsers[uid]
               return (
                 <DataItem
@@ -133,6 +133,20 @@ const ChatSettingsScreen = (props) => {
                 />
               )
             })
+          }
+          {
+            chatData.users.length > 4 &&
+            <DataItem
+              type={"link"}
+              title="View all"
+              hideImage={true}
+              onPress={() => navigation.navigate("DataListScreen", {
+                title: "Participants",
+                data: chatData.users,
+                type: "users",
+                chatId: chatId
+              })}
+            />
           }
         </View>
         {showSuccessMessage && (
