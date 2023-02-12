@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import ProfileImage from "../components/ProfileImage/ProfileImage";
 import Input from "../components/Input/Input";
 import { reducer } from "../utils/Reducers/formReducer";
-import { removeUserFromChat, updateChatData } from "../utils/Actions/chatActions";
+import { AddUsersToChat, removeUserFromChat, updateChatData } from "../utils/Actions/chatActions";
 import colors from "../../constants/colors";
 import SubmitButton from "../components/SubmitButton/SubmitButton";
 import { validateInput } from "../utils/Actions/formActions";
@@ -40,6 +40,28 @@ const ChatSettingsScreen = (props) => {
   };
 
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
+
+  const selectedUsers = props.route.params && props.route.params.selectedUsers;
+  useEffect(() => {
+    if(!selectedUsers){
+      return;
+    }
+
+    const selectedUserData = [];
+    selectedUsers.forEach(uid => {
+      if(uid === userData.userId) return;
+
+      if(!storedUsers[uid]){
+        console.log("No user data found in the data store")
+        return;
+      }
+
+      selectedUserData.push(storedUsers[uid])
+    });
+
+    AddUsersToChat(userData, selectedUserData, chatData)
+    console.log(selectedUserData)
+  }, [selectedUsers])
 
   const inputChangedHandler = useCallback(
     (inputId, inputValue) => {
@@ -118,6 +140,12 @@ const ChatSettingsScreen = (props) => {
             title="Add users"
             icon="plus"
             type="button"
+            onPress={() => navigation.navigate("NewChat", {
+              isGroupChat: true,
+              title: "Add Users",
+              existingUsers: chatData.users,
+              chatId
+            })}
           />
           {
             chatData.users.slice(0, 4).map(uid => {
