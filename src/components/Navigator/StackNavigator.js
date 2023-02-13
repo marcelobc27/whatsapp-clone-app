@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import ChatSettingsScreen from "../../screens/ChatSettingsScreen";
 import TabNavigator from "./TabNavigator";
 import ChatScreen from "../../screens/ChatScreen";
@@ -9,21 +10,52 @@ import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../../../firebaseConfig";
 import { child, get, getDatabase, off, onValue, query, ref } from "firebase/database";
 import { setChatsData } from "../../store/chatSlice";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 import colors from "../../../constants/colors";
 import commonStyles from "../../../constants/commonStyles";
 import { setStoredUsers } from "../../store/userSlice";
 import { setChatMessages, setStarredMessages } from "../../store/messagesSlice";
 import ContactScreen from "../../screens/ContactScreen";
 import DataListScreen from "../../screens/DataListScreen";
+import { StackActions, useNavigation } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
   const dispatch = useDispatch()
+  const navigation = useNavigation()
   const userData = useSelector((state) => state.auth.userData);
   const storedUsers = useSelector((state) => state.users.storedUsers);
   const [isLoading, setIsLoading] = useState(true)
+
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      //handleReceiveNotification
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      const { data } = response.notification.request.content;
+      const chatId = data("chatId");
+
+      if (chatId) {
+        const pushAction = StackActions.push("ChatScreen", {chatId})
+        navigation.dispatch(pushAction)
+      } else {
+        console.log("No chat id sent")
+      }
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   useEffect(() => {
     console.log("Subscribing to firebase listeners");
@@ -161,3 +193,34 @@ const StackNavigator = () => {
 };
 
 export default StackNavigator;
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+  } else {
+    console.log('Must use physical device for Push Notifications');
+  }
+
+  return token;
+}

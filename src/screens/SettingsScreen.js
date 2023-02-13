@@ -203,7 +203,7 @@ const SettingsScreen = (props) => {
         />
         <SubmitButton
           title="Logout"
-          onPress={() => dispatch(userLogout())}
+          onPress={() => dispatch(userLogout(userData))}
           style={styles.saveButton}
           color={colors.nearlyRed}
         />

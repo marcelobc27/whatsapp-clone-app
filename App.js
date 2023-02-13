@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, LogBox } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -8,12 +8,13 @@ import NavigationContainerComponent from "./src/components/Navigator/NavigationC
 import { Provider } from "react-redux";
 import { store } from "./src/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import SettingsScreen from "./src/screens/SettingsScreen";
 import { MenuProvider } from "react-native-popup-menu";
 
 SplashScreen.preventAutoHideAsync();
 
-AsyncStorage.clear()
+// AsyncStorage.clear()
+
+LogBox.ignoreLogs("Unexpected text node: . A text node cannot be a child of a <View>")
 
 export default function App() {
   const [appIsLoaded, setAppIsLoaded] = useState(false);
