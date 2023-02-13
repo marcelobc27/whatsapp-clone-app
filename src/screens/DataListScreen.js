@@ -9,6 +9,7 @@ import PageContainer from "../components/PageContainer/PageContainer"
 const DataListScreen = (props) => {
   const storedUsers = useSelector(state => state.users.storedUsers)
   const userData = useSelector((state) => state.auth.userData);
+  const messagesData = useSelector(state => state.messages.messagesData)
   const navigation = useNavigation()
   const { title, data, type, chatId } = props.route.params;
 
@@ -22,7 +23,7 @@ const DataListScreen = (props) => {
     <PageContainer>
       <FlatList
         data={data}
-        keyExtractor={item => item}
+        keyExtractor={item => item.messageId || item}
         renderItem={(itemData) => {
           let key, onPress, image, title, subTitle, itemType;
 
@@ -40,6 +41,24 @@ const DataListScreen = (props) => {
             subTitle = currentUser.about;
             itemType = isLoggedInUser ? undefined : 'link'
             onPress = isLoggedInUser ? undefined : () => navigation.navigate("ContactScreen", { uid, chatId})
+          } else if(type === "messages"){
+            const starData = itemData.item;
+            const { chatId, messageId } = starData
+            const messagesForChat = messagesData[chatId]
+
+            if(!messagesForChat){
+              return
+            } 
+
+            const messageData = messagesForChat[messageId]
+            const sender = messageData.sentBy && storedUsers[messageData.sentBy]
+            const name = sender && `${sender.firstName} ${sender.lastName}`
+
+            key = messageId;
+            title = name;
+            subTitle = messageData.text;
+            itemType = ""
+            onPress = () => {}
           }
 
           return(

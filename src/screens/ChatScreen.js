@@ -38,9 +38,7 @@ const ChatScreen = (props) => {
   const [replyingTo, setReplyingTo] = useState("");
   const [tempImageUri, setTempImageUri] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-
   const flatList = useRef();
-
   const userData = useSelector((state) => state.auth.userData);
   const storedUsers = useSelector((state) => state.users.storedUsers);
   const storedChats = useSelector((state) => state.chats.chatsData);

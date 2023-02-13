@@ -22,12 +22,31 @@ import {
 } from "../utils/Actions/authActions";
 import { updatedLoggedInUserData } from "../store/authSlice";
 import ProfileImage from "../components/ProfileImage/ProfileImage";
+import DataItem from "../components/DataItem/DataItem";
+import { useNavigation } from "@react-navigation/native";
+import { useMemo } from "react";
 
 const SettingsScreen = (props) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(false);
-  const userData = useSelector((state) => state.auth.userData);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const userData = useSelector((state) => state.auth.userData);
+  const starredMessages = useSelector(
+    (state) => state.messages.starredMessages ?? {}
+  );
+
+  const sortedStarredMessages = useMemo(() => {
+    let result = []
+
+    const chats = Object.values(starredMessages);
+
+    chats.forEach(chat => {
+      const chatMessages = Object.values(chat)
+      result = result.concat(chatMessages)
+    })
+    return result
+  }, [starredMessages])
 
   const firstName = userData.firstName || "";
   const lastName = userData.lastName || "";
@@ -170,6 +189,18 @@ const SettingsScreen = (props) => {
             )
           )}
         </View>
+        <DataItem
+          type={"link"}
+          title="Starred messages"
+          hideImage={true}
+          onPress={() =>
+            navigation.navigate("DataListScreen", {
+              title: "Starred messages",
+              data: sortedStarredMessages,
+              type: "messages"
+            })
+          }
+        />
         <SubmitButton
           title="Logout"
           onPress={() => dispatch(userLogout())}

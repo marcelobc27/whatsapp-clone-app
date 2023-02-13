@@ -12,7 +12,11 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import ProfileImage from "../components/ProfileImage/ProfileImage";
 import Input from "../components/Input/Input";
 import { reducer } from "../utils/Reducers/formReducer";
-import { AddUsersToChat, removeUserFromChat, updateChatData } from "../utils/Actions/chatActions";
+import {
+  AddUsersToChat,
+  removeUserFromChat,
+  updateChatData,
+} from "../utils/Actions/chatActions";
 import colors from "../../constants/colors";
 import SubmitButton from "../components/SubmitButton/SubmitButton";
 import { validateInput } from "../utils/Actions/formActions";
@@ -21,13 +25,16 @@ import { useNavigation } from "@react-navigation/native";
 
 const ChatSettingsScreen = (props) => {
   const chatId = props.route.params.chatId;
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const chatData = useSelector((state) => state.chats.chatsData[chatId] || {});
   const userData = useSelector((state) => state.auth.userData);
-  const storedUsers = useSelector((state) => state.users.storedUsers)
+  const storedUsers = useSelector((state) => state.users.storedUsers);
+  const starredMessages = useSelector(
+    (state) => state.messages.starredMessages[chatId] ?? {}
+  );
 
   const initialState = {
     inputValues: {
@@ -43,25 +50,25 @@ const ChatSettingsScreen = (props) => {
 
   const selectedUsers = props.route.params && props.route.params.selectedUsers;
   useEffect(() => {
-    if(!selectedUsers){
+    if (!selectedUsers) {
       return;
     }
 
     const selectedUserData = [];
-    selectedUsers.forEach(uid => {
-      if(uid === userData.userId) return;
+    selectedUsers.forEach((uid) => {
+      if (uid === userData.userId) return;
 
-      if(!storedUsers[uid]){
-        console.log("No user data found in the data store")
+      if (!storedUsers[uid]) {
+        console.log("No user data found in the data store");
         return;
       }
 
-      selectedUserData.push(storedUsers[uid])
+      selectedUserData.push(storedUsers[uid]);
     });
 
-    AddUsersToChat(userData, selectedUserData, chatData)
-    console.log(selectedUserData)
-  }, [selectedUsers])
+    AddUsersToChat(userData, selectedUserData, chatData);
+    console.log(selectedUserData);
+  }, [selectedUsers]);
 
   const inputChangedHandler = useCallback(
     (inputId, inputValue) => {
@@ -102,7 +109,7 @@ const ChatSettingsScreen = (props) => {
   const leaveChat = useCallback(async () => {
     try {
       setIsLoading(true);
-      await removeUserFromChat(userData, userData, chatData)
+      await removeUserFromChat(userData, userData, chatData);
       navigation.popToTop();
     } catch (error) {
       console.log(error);
@@ -111,7 +118,7 @@ const ChatSettingsScreen = (props) => {
     }
   }, [navigation, isLoading]);
 
-  if(!chatData.users) return null;
+  if (!chatData.users) return null;
 
   return (
     <PageContainer>
@@ -134,22 +141,25 @@ const ChatSettingsScreen = (props) => {
           errorText={formState.inputValidities["chatName"]}
         />
         <View style={styles.actionButtonsWrapper}>
-        <View style={styles.sectionContainer}>
-          <Text style={styles.heading}>{chatData.users.length} Participantes</Text>
-          <DataItem
-            title="Add users"
-            icon="plus"
-            type="button"
-            onPress={() => navigation.navigate("NewChat", {
-              isGroupChat: true,
-              title: "Add Users",
-              existingUsers: chatData.users,
-              chatId
-            })}
-          />
-          {
-            chatData.users.slice(0, 4).map(uid => {
-              const currentUser = storedUsers[uid]
+          <View style={styles.sectionContainer}>
+            <Text style={styles.heading}>
+              {chatData.users.length} Participantes
+            </Text>
+            <DataItem
+              title="Add users"
+              icon="plus"
+              type="button"
+              onPress={() =>
+                navigation.navigate("NewChat", {
+                  isGroupChat: true,
+                  title: "Add Users",
+                  existingUsers: chatData.users,
+                  chatId,
+                })
+              }
+            />
+            {chatData.users.slice(0, 4).map((uid) => {
+              const currentUser = storedUsers[uid];
               return (
                 <DataItem
                   key={uid}
@@ -157,53 +167,68 @@ const ChatSettingsScreen = (props) => {
                   title={`${currentUser.firstName} ${currentUser.lastName}`}
                   subTitle={currentUser.about}
                   type={uid !== userData.userId && "link"}
-                  onPress={() => uid !== userData.userId && props.navigation.navigate("ContactScreen", {uid, chatId})}  
+                  onPress={() =>
+                    uid !== userData.userId &&
+                    props.navigation.navigate("ContactScreen", { uid, chatId })
+                  }
                 />
-              )
+              );
+            })}
+            {chatData.users.length > 4 && (
+              <DataItem
+                type={"link"}
+                title="View all"
+                hideImage={true}
+                onPress={() =>
+                  navigation.navigate("DataListScreen", {
+                    title: "Participants",
+                    data: chatData.users,
+                    type: "users",
+                    chatId: chatId,
+                  })
+                }
+              />
+            )}
+          </View>
+          {showSuccessMessage && (
+            <Text style={styles.saveMessageText}>Saved!</Text>
+          )}
+          {isLoading ? (
+            <ActivityIndicator
+              size={"small"}
+              color={colors.primary}
+              style={styles.activityIndicator}
+            />
+          ) : (
+            hasChanges() && (
+              <SubmitButton
+                title="Save Changes"
+                onPress={saveHandler}
+                style={styles.saveButton}
+                disabled={!formState.formIsValid}
+              />
+            )
+          )}
+        </View>
+        <DataItem
+          type={"link"}
+          title="Starred messages"
+          hideImage={true}
+          onPress={() =>
+            navigation.navigate("DataListScreen", {
+              title: "Starred messages",
+              data: Object.values(starredMessages),
+              type: "messages"
             })
           }
-          {
-            chatData.users.length > 4 &&
-            <DataItem
-              type={"link"}
-              title="View all"
-              hideImage={true}
-              onPress={() => navigation.navigate("DataListScreen", {
-                title: "Participants",
-                data: chatData.users,
-                type: "users",
-                chatId: chatId
-              })}
-            />
-          }
-        </View>
-        {showSuccessMessage && (
-          <Text style={styles.saveMessageText}>Saved!</Text>
-        )}
-        {isLoading ? (
-          <ActivityIndicator
-            size={"small"}
-            color={colors.primary}
-             style={styles.activityIndicator}
-          />
-        ) : (
-          hasChanges() && (
-             <SubmitButton
-               title="Save Changes"
-               onPress={saveHandler}
-              style={styles.saveButton}
-               disabled={!formState.formIsValid}
-            />
-          )
-        )}
-        </View>
+        />
       </ScrollView>
       {
         <SubmitButton
           title="Leave Chat"
           color={colors.red}
           onPress={leaveChat}
-          style={{marginBotton: 20}}
+          style={{ marginBotton: 20 }}
         />
       }
     </PageContainer>
@@ -238,17 +263,17 @@ const styles = StyleSheet.create({
     fontFamily: "bold",
   },
   sectionContainer: {
-  width: "100%",
-  alignItems: "left",
-  justifyContent: "center",
-  marginTop: 10
+    width: "100%",
+    alignItems: "left",
+    justifyContent: "center",
+    marginTop: 10,
   },
   heading: {
     marginVertical: 8,
     color: colors.textColor,
     fontFamily: "bold",
-    letterSpacing: 0.3
-  }
+    letterSpacing: 0.3,
+  },
 });
 
 export default ChatSettingsScreen;
